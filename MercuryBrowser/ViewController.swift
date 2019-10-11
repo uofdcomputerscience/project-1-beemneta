@@ -58,7 +58,9 @@ class ViewController: UIViewController {
     
     
     }
-  
+    
+    
+
 }
 
 extension ViewController: UITableViewDataSource {
@@ -91,31 +93,22 @@ extension ViewController: UITableViewDataSource {
         tablecell.rightLabel.text = "\(string)"
     }
     //function to fill image in the tableCell
-    func fillImage (tablecell: tableCell, string: String){
-        
-        tablecell.imageView?.image = getImage(from: string)
-    }
     // Code I borrowed from StackOverflow
     // To get image from url
-    func getImage(from string: String) -> UIImage? {
-        //2. Get valid URL
-        guard let url = URL(string: string)
-            else {
-                print("Unable to create URL")
-                return nil
-        }
-        var image: UIImage? = nil
-        do {
-            //3. Get valid data
-            let data = try Data(contentsOf: url, options: [])
-            //4. Make image
-            image = UIImage(data: data)
-        }
-        catch {
-            print(error.localizedDescription)
-        }
-        return image
+    func fillImage (tablecell: tableCell, string: String) -> Void{
+        let session = URLSession(configuration: .ephemeral)
+        let task = session.dataTask(with: URL(string: string)!) { (data, response, error) in
+                if let data = data {
+                    let image = UIImage(data: data)
+                    DispatchQueue.main.async {
+                        tablecell.imageViewer.image = image
+                        
+                    }
+                }
+            }
+            task.resume()
     }
+    
     
     
 }
